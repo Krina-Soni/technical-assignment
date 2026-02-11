@@ -1,55 +1,53 @@
+# Bug Report Summary
+
+## Bug Index
+
+| Bug ID  | Title                                      | Severity | Priority |
+|---------|--------------------------------------------|----------|----------|
+| BUG-01  | Admin Navigation Link Visible              | Medium   | High     |
+| BUG-02  | Admin Dashboard Accessible Without Auth    | Critical | High     |
+| BUG-03  | No Visible Authentication State After Login| High     | Medium   |
+| BUG-04  | Floating Point Precision in Price Display  | Medium   | Medium   |
+| BUG-05  | Debug Info Exposed in Product Detail Page  | Medium   | Medium   |
+| BUG-06  | Out-of-Stock Product Can Be Added to Cart  | High     | High     |
+| BUG-07  | Cart Allows Quantity Exceeding Stock       | Critical | High     |
+| BUG-08  | Cart Empties on Page Refresh               | High     | Medium   |
+| BUG-09  | Product Image Loads Slowly (Layout Shift)  | Medium   | Medium   |
+
+---
+
 ## BUG-01: Admin Navigation Link Visible to Anonymous Users
 
 **Category:** UI Authorization / Information Disclosure  
 **Severity:** Medium  
 **Priority:** High  
 
----
-
 ### Description
-
 The Admin navigation link is visible in the header for users who are not authenticated. The navigation component does not conditionally render based on authentication state or user role.
 
----
-
 ### Steps to Reproduce
-
-1. Open browser.
-2. Navigate to `http://localhost:3000/`
-3. Do not log in.
-4. Observe the header navigation bar.
-
----
+1. Open browser.  
+2. Navigate to `http://localhost:3000/`  
+3. Do not log in.  
+4. Observe the header navigation bar.  
 
 ### Expected Result
-
 The Admin navigation link should only be visible to authenticated users with the `admin` role.
 
----
-
 ### Actual Result
-
 The Admin link is visible to anonymous (unauthenticated) users.
 
----
-
 ### Screenshot
-
 ![Admin Navigation Visible](reports/screenshots/admin-visible.png)
 
----
-
 ### Impact
-
-Although this issue alone does not grant administrative access, it exposes internal system structure and administrative functionality to unauthenticated users.
-
-This may facilitate targeted attacks if backend protection is insufficient.
-
----
+Exposes internal system structure and administrative functionality to unauthenticated users, potentially aiding targeted attacks.
 
 ### Possible Root Cause
+Navigation component does not validate authentication state or user role before rendering the Admin link.
 
-The navigation component does not validate authentication state or user role before rendering the Admin link.
+### Recommended Fix
+Add conditional rendering logic based on authentication state and role.
 
 ---
 
@@ -59,84 +57,37 @@ The navigation component does not validate authentication state or user role bef
 **Severity:** Critical  
 **Priority:** High  
 
----
-
 ### Description
-
-The Admin Dashboard is accessible without authentication. Clicking the Admin link from the homepage, or directly navigating to `/admin`, loads administrative data without requiring login or validating user role.
-
-This indicates missing server-side authorization enforcement.
-
----
+The Admin Dashboard is accessible without authentication. Clicking the Admin link or navigating directly to `/admin` loads administrative data without requiring login.
 
 ### Steps to Reproduce
+- **Method 1 – UI Navigation**  
+  1. Navigate to homepage without logging in.  
+  2. Click Admin link.  
+  3. Dashboard loads.  
 
-#### Method 1 – UI Navigation
-
-1. Open browser.
-2. Navigate to `http://localhost:3000/`
-3. Do not log in.
-4. Click on the Admin icon in the header.
-5. Observe that the Admin Dashboard loads successfully.
-
-#### Method 2 – Direct URL Access
-
-1. Open a new incognito/private browsing window.
-2. Navigate directly to `http://localhost:3000/admin`
-3. Observe that the Admin Dashboard loads successfully.
-
----
+- **Method 2 – Direct URL Access**  
+  1. Open incognito window.  
+  2. Navigate to `http://localhost:3000/admin`.  
+  3. Dashboard loads.  
 
 ### Expected Result
-
-User should:
-
-- Be redirected to the login page, OR  
-- Receive a `403 Forbidden` response, OR  
-- Be shown an access denied message.
-
-Administrative data must not be accessible without authentication and proper role validation.
-
----
+User should be redirected to login or receive `403 Forbidden`.
 
 ### Actual Result
-
-Admin dashboard loads successfully showing:
-
-- Total Products  
-- Active Orders  
-- Total Revenue  
-- Inventory data  
-
-No authentication or role validation is enforced.
-
----
+Admin dashboard loads with sensitive data.
 
 ### Screenshot
-
 ![Admin Dashboard Accessible](reports/screenshots/admin-accessible.png)
 
----
-
 ### Impact
-
-Sensitive administrative data is publicly exposed, leading to a critical security vulnerability.
-
-This demonstrates:
-
-- Missing authentication guard  
-- Missing role-based access control (RBAC)  
-- Lack of backend authorization middleware enforcement  
-
-Any user (including anonymous users) can access administrative functionality and data.
-
----
+Critical exposure of sensitive administrative data.
 
 ### Possible Root Cause
+Admin route not protected by authentication middleware; role validation missing.
 
-- Admin route is not protected by authentication middleware.
-- Role validation is not enforced on the backend.
-- UI and backend both lack proper authorization checks.
+### Recommended Fix
+Implement server-side authentication and RBAC middleware for all admin routes.
 
 ---
 
@@ -146,69 +97,30 @@ Any user (including anonymous users) can access administrative functionality and
 **Severity:** High  
 **Priority:** Medium  
 
----
-
 ### Description
-
-After successful login (either as admin or customer), the application does not display any visible indication of the authenticated state.
-
-The login button disappears, but no profile information, username, role indicator, or logout option is shown.
-
-Users cannot determine:
-
-- Whether they are logged in  
-- Which role they are logged in as  
-- Whether authentication was successful  
-
----
+After login, the application does not display any visible indication of authenticated state (no profile info, role, or logout option).
 
 ### Steps to Reproduce
-
-1. Navigate to `http://localhost:3000/login`
-2. Login using:
-   - Admin credentials, OR
-   - Customer credentials
-3. Observe the header/navigation area after login.
-
----
+1. Login as admin or customer.  
+2. Observe header/navigation area.  
 
 ### Expected Result
-
-After successful login, the application should:
-
-- Display user information (e.g., username or role), OR  
-- Show a logout option, OR  
-- Clearly indicate authenticated state in the UI.
-
----
+UI should display user info, role, or logout option.
 
 ### Actual Result
-
-- Login button disappears.
-- No profile, username, or role indicator is shown.
-- No visible confirmation of logged-in state.
-
----
+Login button disappears, but no indication of logged-in state.
 
 ### Screenshot
-
 ![Login State Not Visible](reports/screenshots/login-visibility.png)
 
----
-
 ### Impact
-
-- Poor user experience.
-- Confusing session state.
-- Makes it difficult to verify authorization behavior.
-
----
+Poor UX and confusion about session state.
 
 ### Possible Root Cause
+Missing UI binding to authentication state; role not stored in global state/context.
 
-- Missing UI binding to authentication state.
-- Role not stored in global state/context.
-- Header component not reacting to auth changes.
+### Recommended Fix
+Bind authentication state to header component and display user info + logout option.
 
 ---
 
@@ -218,52 +130,30 @@ After successful login, the application should:
 **Severity:** Medium  
 **Priority:** Medium  
 
----
-
 ### Description
-
-Product prices are displayed with excessive floating-point precision instead of proper currency formatting.
-
----
+Product prices are displayed with excessive floating-point precision.
 
 ### Steps to Reproduce
-
-1. Navigate to the Electronics page.
-2. Observe product price displayed as:
-   `$25.9900000000000002`
-
----
+1. Navigate to Electronics page.  
+2. Observe product price displayed as `$25.9900000000000002`.  
 
 ### Expected Result
-
-Price should be formatted to two decimal places:
-`$25.99`
-
----
+Price should be formatted to two decimal places (`$25.99`).
 
 ### Actual Result
-
-Floating-point precision error is visible in the UI.
-
----
+Floating-point precision error visible.
 
 ### Screenshot
-
 ![Price Formatting Issue](reports/screenshots/invalid-formatting.png)
 
----
-
 ### Impact
-
-- Reduces user trust.
-- Appears unprofessional.
-- Indicates improper currency formatting logic.
-
----
+Reduces user trust and appears unprofessional.
 
 ### Possible Root Cause
+Price values not formatted using proper rounding method.
 
-Price values are not formatted using proper rounding method (e.g., `.toFixed(2)` or currency formatter) before rendering.
+### Recommended Fix
+Use `.toFixed(2)` or Intl.NumberFormat for currency formatting.
 
 ---
 
@@ -273,51 +163,31 @@ Price values are not formatted using proper rounding method (e.g., `.toFixed(2)`
 **Severity:** Medium  
 **Priority:** Medium  
 
----
-
 ### Description
-
-Debug information is visible to end users on the product detail page.
-
----
+Debug information is visible to end users on product detail page.
 
 ### Steps to Reproduce
-
-1. Open any product detail page.
-2. Scroll to product information section.
-3. Observe the debug text:
-   `"Debug info: Screen Width 1280px"`
-
----
+1. Open product detail page.  
+2. Scroll to product info section.  
+3. Observe debug text `"Debug info: Screen Width 1280px"`.  
 
 ### Expected Result
-
-Debug or development-related information should not be visible in production UI.
-
----
+Debug info should not be visible in production.
 
 ### Actual Result
-
-Debug information is displayed to users.
-
----
+Debug info displayed to users.
 
 ### Screenshot
-
 ![Debug Info Visible](reports/screenshots/debug-screen.png)
 
----
-
 ### Impact
-
-- Reveals internal implementation details.
-- Indicates improper environment configuration.
-
----
+Reveals internal implementation details.
 
 ### Possible Root Cause
-
 Debug flag not disabled for production build.
+
+### Recommended Fix
+Remove debug logs and disable debug flags in production.
 
 ---
 
@@ -327,53 +197,33 @@ Debug flag not disabled for production build.
 **Severity:** High  
 **Priority:** High  
 
----
-
 ### Description
-
-Products marked as Out of Stock (Stock = 0) can still be added to the cart successfully.
-
-The UI displays that the product cannot be purchased, but the Add to Cart button remains enabled.
-
----
+Out-of-stock products can still be added to cart.
 
 ### Steps to Reproduce
-
-1. Navigate to product listing page.
-2. Open a product where stock is 0.
-3. Click Add to Cart.
-4. Navigate to cart page.
-
----
+1. Navigate to product listing.  
+2. Select product with stock = 0.  
+3. Click Add to Cart.  
 
 ### Expected Result
-
-Product should not be added to the cart.
-
----
+Product should not be added.
 
 ### Actual Result
-
-Product is successfully added to the cart.
-
----
+Product added successfully.
 
 ### Screenshot
-
 ![Out of Stock Added](reports/screenshots/out-of-stock.png)
-
----
+![Out of Stock Added To Cart](reports/screenshots/out-of-stock-added-to-cart.png)
+![Out of Stock Added in The Cart](reports/screenshots/out-of-stock-in-shopping-cart.png)
 
 ### Impact
-
-- Inventory validation failure.
-- Risk of overselling.
-
----
+Inventory validation failure; risk of overselling.
 
 ### Possible Root Cause
+Missing stock validation in frontend/backend.
 
-Missing stock validation in frontend and/or backend.
+### Recommended Fix
+Disable Add to Cart button for stock=0 and enforce backend validation.
 
 ---
 
@@ -383,50 +233,32 @@ Missing stock validation in frontend and/or backend.
 **Severity:** Critical  
 **Priority:** High  
 
----
-
 ### Description
-
-Users can add more items to the cart than available stock.
-
----
+Users can add more items than available stock.
 
 ### Steps to Reproduce
-
-1. Open a product with stock 6.
-2. Add the product more than 6 times.
-3. Open cart page.
-
----
+1. Open product with stock 6.  
+2. Add more than 6 items.  
+3. Observe cart.  
 
 ### Expected Result
-
-System should restrict quantity to available stock.
-
----
+Quantity restricted to available stock.
 
 ### Actual Result
-
-Cart quantity exceeds available inventory.
-
----
+Cart exceeds inventory.
 
 ### Screenshot
-
+![Product In Stock](reports/screenshots/product-in-stock.png)
 ![Exceeds Quantity](reports/screenshots/exceeds-quantity.png)
 
----
-
 ### Impact
-
-- Inventory inconsistency.
-- Potential financial risk.
-
----
+Inventory inconsistency; financial risk.
 
 ### Possible Root Cause
+Backend does not enforce stock limits.
 
-Backend does not enforce stock limits during cart update.
+### Recommended Fix
+Add backend validation to restrict cart quantity to stock.
 
 ---
 
@@ -436,101 +268,64 @@ Backend does not enforce stock limits during cart update.
 **Severity:** High  
 **Priority:** Medium  
 
----
-
 ### Description
-
-Items added to the cart are removed when the page is refreshed.
-
----
+Cart items are removed on page refresh.
 
 ### Steps to Reproduce
-
-1. Add products to cart.
-2. Open cart page.
-3. Refresh the page.
-
----
+1. Add products to cart.  
+2. Refresh page.  
 
 ### Expected Result
-
-Cart items should persist after refresh.
-
----
+Cart items should persist.
 
 ### Actual Result
-
 Cart becomes empty.
 
----
-
 ### Screenshot
-
+![Cart With Produtcs](reports/screenshots/cart-with-products.png)
 ![Cart Empties](reports/screenshots/page-refresh.png)
 
----
-
 ### Impact
-
-- Poor user experience.
-- Loss of user state.
-
----
+Poor UX; loss of user state.
 
 ### Possible Root Cause
+Cart state stored only in memory.
 
-Cart state stored only in memory without persistence.
+### Recommended Fix
+Persist cart state in localStorage or backend session.
 
 ---
 
 ## BUG-09: Product Image Loads Slowly and Causes Layout Shift
 
-**Category:** UX / Responsiveness / Performance  
+**Category:** UX / Performance  
 **Severity:** Medium  
 **Priority:** Medium  
 
----
-
 ### Description
-
-Product image does not load immediately and causes visible layout shift.
-
----
+Product image loads slowly and causes layout shift.
 
 ### Steps to Reproduce
-
-1. Open any product detail page.
-2. Observe image loading behavior.
-
----
+1. Open product detail page.  
+2. Observe image loading behavior.  
 
 ### Expected Result
-
-- Image container space should be reserved.
-- No layout shift should occur.
-
----
+Image container space reserved; no layout shift.
 
 ### Actual Result
-
-- Blank image area initially.
-- Layout shifts when image loads.
-
----
+Blank area initially; layout shifts when image loads.
 
 ### Screenshot
-
 ![Image Load Issue](reports/screenshots/no-product-load.png)
-
----
+![Image Loads](reports/screenshots/product-loads.png)
 
 ### Impact
-
-- Poor user experience.
-- Layout instability (CLS issue).
-
----
+Poor UX; layout instability (CLS issue).
 
 ### Possible Root Cause
+Image loading not optimized; placeholder missing.
 
-Image loading not optimized and placeholder not implemented.
+### Recommended Fix
+Use Next.js `<Image>` component with `placeholder="blur"` or reserve container space.
+
+---
