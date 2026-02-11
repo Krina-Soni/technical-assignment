@@ -37,3 +37,14 @@ Thumbs.db
 # Temporary files
 .gemini/
 tmp/
+
+# Playwright
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+/playwright/.auth/
+
+# Test reports
+reports/
+*.html
