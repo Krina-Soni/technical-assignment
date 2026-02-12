@@ -19,15 +19,15 @@ Then("I should see featured categories", async function () {
   const homePage = new HomePage(this.page);
   await expect(homePage.featuredCategoriesHeading).toBeVisible();
   await expect(homePage.electronicsHeading).toBeVisible();
-await expect(homePage.electronicsButton).toHaveText(/Browse Electronics/);
+  await expect(homePage.electronicsButton).toHaveText(/Browse Electronics/);
   await expect(homePage.clothingHeading).toBeVisible();
   await expect(homePage.clothingButton).toHaveText(/Browse Clothing/);
   await expect(homePage.homeHeading).toBeVisible();
-  await expect(homePage.homeButton).toHaveText(/Browse Home/)
+  await expect(homePage.homeButton).toHaveText(/Browse Home/);
 });
 
 Then("I should see the call to action", async function () {
   const homePage = new HomePage(this.page);
   await expect(homePage.ctaHeading).toBeVisible();
-  await expect(homePage.viewAllProductsButton).toBeVisible()
+  await expect(homePage.viewAllProductsButton).toBeVisible();
 });

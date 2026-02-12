@@ -24,22 +24,37 @@ export class HomePage extends BasePage {
     super(page);
 
     this.brandLogo = page.getByRole("link", { name: "QA E-Shop" });
-    this.productsLink = page.getByRole("link", { name: "Products", exact: true });
+    this.productsLink = page.getByRole("link", {
+      name: "Products",
+      exact: true,
+    });
     this.cartLink = page.locator('nav a[href="/cart"]');
-    this.loginLink = page.locator('nav a[href="/login"]')
-    this.featuredCategoriesHeading = page.getByRole("heading", { name: "Featured Categories" });
-    this.electronicsHeading = page.getByRole("heading", { name: "Electronics" });
-    this.electronicsButton = page.getByRole("button", { name: "Browse Electronics" });
+    this.loginLink = page.locator('nav a[href="/login"]');
+    this.featuredCategoriesHeading = page.getByRole("heading", {
+      name: "Featured Categories",
+    });
+    this.electronicsHeading = page.getByRole("heading", {
+      name: "Electronics",
+    });
+    this.electronicsButton = page.getByRole("button", {
+      name: "Browse Electronics",
+    });
     this.clothingHeading = page.getByRole("heading", { name: "Clothing" });
     this.clothingButton = page.getByRole("button", { name: "Browse Clothing" });
     this.homeHeading = page.getByRole("heading", { name: "Home" });
     this.homeButton = page.getByRole("button", { name: "Browse Home" });
 
     this.ctaHeading = page.getByRole("heading", { name: "Ready to shop?" });
-    this.viewAllProductsButton = page.getByRole("button", { name: "View All Products" });
+    this.viewAllProductsButton = page.getByRole("button", {
+      name: "View All Products",
+    });
   }
 
   async open(): Promise<void> {
     await this.navigate("/");
+  }
+
+  async isLoginVisible(): Promise<boolean> {
+    return await this.loginLink.isVisible().catch(() => false);
   }
 }

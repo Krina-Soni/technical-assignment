@@ -3,7 +3,7 @@ import { Page } from "@playwright/test";
 export class BasePage {
   constructor(protected page: Page) {}
 
-  async navigate(path: string): Promise<void> {
+  async navigate(path: string) {
     await this.page.goto(`http://localhost:3000${path}`);
   }
 }
