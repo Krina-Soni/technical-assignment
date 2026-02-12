@@ -46,5 +46,4 @@ tmp/
 /playwright/.auth/
 
 # Test reports
-reports/
 *.html
