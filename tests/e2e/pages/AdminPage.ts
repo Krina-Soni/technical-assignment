@@ -6,6 +6,8 @@ export class AdminPage extends BasePage {
 
   constructor(page: Page) {
     super(page);
-    this.dashboardHeading = page.getByRole("heading", { name: "Admin Dashboard" });
+    this.dashboardHeading = page.getByRole("heading", {
+      name: "Admin Dashboard",
+    });
   }
 }

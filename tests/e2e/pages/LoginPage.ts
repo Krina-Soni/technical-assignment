@@ -19,7 +19,7 @@ export class LoginPage extends BasePage {
     await this.navigate("/login");
   }
 
-    async navigateToPath(path:string) {
+  async navigateToPath(path: string) {
     await this.navigate(path);
   }
 
