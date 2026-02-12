@@ -8,7 +8,7 @@ describe("User Model Specification", () => {
     const user = new User({
       name: "Krina Soni",
       email: "Krinasoni@test.com",
-      password: "password123"
+      password: "test1234"
     });
 
     expect(user.role).toBe("customer");
