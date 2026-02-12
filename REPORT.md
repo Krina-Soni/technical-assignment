@@ -1,3 +1,16 @@
+# QA E-Shop Test Execution Report
+
+## 1. Test Strategy Summary
+The testing strategy for the QA E-Shop followed a **Risk-Based, Automation-First approach** utilizing the **Page Object Model (POM)** pattern. 
+
+* **Framework**: Playwright with Cucumber (Behavior Driven Development) for clear alignment between business requirements and technical execution.
+* **Methodology**: 
+    * **End-to-End (E2E)**: Focused on critical user journeys (CUJs) such as the "Golden Path" from login to order placement.
+    * **Regression Testing**: Automated core functionalities (Search, Cart, Authentication) to ensure stability across deployments.
+    * **Negative Testing**: Validated system resilience against invalid credentials, out-of-stock purchases, and form validation errors.
+* **Tooling**: Used `testData.ts` for centralized data management and `hooks.ts` for automated browser lifecycle handling.
+
+
 # Bug Report Summary
 
 ## Bug Index
@@ -13,8 +26,19 @@
 | BUG-07  | Cart Allows Quantity Exceeding Stock       | Critical | High     |
 | BUG-08  | Cart Empties on Page Refresh               | High     | Medium   |
 | BUG-09  | Product Image Loads Slowly (Layout Shift)  | Medium   | Medium   |
+| BUG-10  | Search Results Not Populating for Specific Product Query  | High   | High   |
+| BUG-11  | Very Long Product Name Breaks UI Layout    | Medium   | Medium   |
 
 ---
+
+### Severity Distribution
+
+- Critical: 2
+- High: 4
+- Medium: 5
+
+Total Defects Identified: 11
+
 
 ## BUG-01: Admin Navigation Link Visible to Anonymous Users
 
@@ -282,7 +306,7 @@ Cart items should persist.
 Cart becomes empty.
 
 ### Screenshot
-![Cart With Produtcs](reports/screenshots/cart-with-products.png)
+![Cart With Products](reports/screenshots/cart-with-products.png)
 ![Cart Empties](reports/screenshots/page-refresh.png)
 
 ### Impact
@@ -329,3 +353,135 @@ Image loading not optimized; placeholder missing.
 Use Next.js `<Image>` component with `placeholder="blur"` or reserve container space.
 
 ---
+
+## BUG-10: Search Results Not Populating for Specific Product Query
+
+**Category:** Functionality / API Integration  
+**Severity:** High  
+**Priority:** High  
+
+### Description
+
+When searching for a specific product (e.g., "Product 19"), the backend API returns the correct product data; however, the UI does not update to display the expected filtered result.
+
+Although the network response contains the correct product object, the product grid continues to display unrelated products (e.g., Product 1, Product 2, Product 3, Product 4).
+
+This indicates a disconnect between the API response and frontend rendering logic.
+
+### Steps to Reproduce
+
+1. Navigate to `http://localhost:3000/products`
+2. Enter a valid product name in the search field (e.g., `Product 19`)
+3. Observe the Network tab in DevTools:
+   - Confirm that the API request `/products?search=Product 19` returns correct product data
+4. Observe the product grid displayed on the UI
+
+### Expected Result
+
+- Only the matching product (e.g., Product 19) should be displayed.
+- All unrelated products should be removed from the grid.
+- UI should reflect the API response accurately.
+
+### Actual Result
+
+- API returns correct product data.
+- UI continues to display default catalog products.
+- Search results are not reflected in the product listing.
+
+### Screenshot
+
+![Search Results Not Updating](reports/screenshots/search-result-not-updating.png)
+
+### Impact
+
+- Search functionality is effectively broken.
+- Users cannot reliably find specific products.
+- Creates inconsistency between backend and frontend.
+- Reduces trust in system behavior.
+- Affects core user journey (product discovery).
+
+### Possible Root Cause
+
+- Search response not bound to state properly.
+- React state not updated after API response.
+- Incorrect dependency handling in useEffect.
+- Search input not triggering re-render.
+- Cached catalog state overriding search results.
+
+---
+
+## BUG-11: Very Long Product Name Breaks UI Layout
+
+**Category:** UI / Responsiveness / Layout  
+**Severity:** Medium  
+**Priority:** Medium  
+
+### Description
+
+Products with excessively long names are not properly handled in the catalog view.  
+The product title overflows horizontally beyond the card boundary, breaking the layout structure and affecting overall UI consistency.
+
+The text does not wrap, truncate, or apply ellipsis properly.
+
+### Steps to Reproduce
+
+1. Navigate to `http://localhost:3000/products`
+2. Locate the product with a very long name (e.g., "Very Long Name Product AAAAAAAAAAAAA...")
+3. Observe how the product title is rendered inside the product card.
+
+### Expected Result
+
+- Product name should:
+  - Wrap to the next line, OR
+  - Be truncated with ellipsis (`...`), OR
+  - Be limited to a fixed number of lines using proper CSS handling.
+- Layout should remain intact.
+- No horizontal overflow should occur.
+
+---
+
+### Actual Result
+
+- Product name overflows outside the card boundary.
+- UI alignment is disrupted.
+- Layout appears broken and inconsistent with other product cards.
+
+### Screenshot
+
+![Long Product Name Overflow](reports/screenshots/long-product-name-overflow.png)
+
+### Impact
+
+- Poor visual presentation.
+- Layout instability.
+- Breaks responsive design principles.
+- Reduces overall UI quality and professionalism.
+- Can worsen on smaller screen sizes (mobile view).
+
+### Possible Root Cause
+
+- Missing `text-overflow: ellipsis`
+- Missing `overflow: hidden`
+- Missing `line-clamp` configuration
+- No max-width or wrapping rule applied to product title container
+
+
+## 3. Test Coverage Summary (40+ Scenarios)
+The combined manual and automated test suite provides coverage across the following functional domains
+
+| Module | Coverage Description |
+| :--- | :--- |
+| **Authentication** | Admin/User login, invalid credentials, and session management. |
+| **Authorization** | Role-Based Access Control (RBAC) for Admin Dashboard access. |
+| **Product Catalog** | Homepage loading, category navigation, and product details view. |
+| **Search** | Query input and results display logic. |
+| **Cart Management** | Adding/removing items, badge incrementing, and duplicate item logic. |
+| **Checkout Flow** | Shipping details entry, payment validation, and order confirmation. |
+
+## 4. Recommendations / Next Steps
+* **Fix State Persistence**: Implement `localStorage` synchronization for the cart so users don't lose progress on page reloads.
+* **Currency Utility**: Implement a formatting utility on the frontend to round prices to two decimal places.
+* **API Validation**: Move stock validation from the frontend (browser alerts) to the backend API to prevent "race conditions" during checkout.
+* **CI/CD Integration**: Integrate the Cucumber-Playwright suite into a Github Actions or GitLab CI pipeline to run automatically on every Pull Request.
+* **Enhanced Reporting**: Implement `cucumber-html-reporter` for visual execution logs and screenshot capture on failure.
+

@@ -4,4 +4,4 @@ export * from "./LoginPage";
 export * from "./AdminPage";
 export * from "./ProductsPage";
 export * from "./CartPage";
-export * from "./CheckOutPage";
+export * from "./CheckoutPage";

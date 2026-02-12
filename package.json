@@ -9,7 +9,7 @@
     "build": "next build",
     "start": "next start",
     "test": "jest",
-    "test:e2e": "cucumber-js tests/e2e/features/**/*.feature --require-module ts-node/register --require tests/e2e/support/world.ts --require tests/e2e/support/hooks.ts --require tests/e2e/step-definitions/**/*.ts --format html:reports/cucumber-report.html; echo \"\nReport available at: file://$(pwd)/reports/cucumber-report.html\" && open reports/cucumber-report.html",
+    "test:e2e": "cucumber-js; echo \"\\n Report: file://$(pwd)/reports/cucumber-report.html\" && open reports/cucumber-report.html",
     "seed": "ts-node server/seed.ts"
   },
   "keywords": [],
