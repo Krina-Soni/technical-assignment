@@ -71,7 +71,7 @@ When("I add the item to the cart {int} times", async function (times: number) {
   const cartPage = new CartPage(this.page);
 
   for (let i = 0; i < times; i++) {
-    this.page.once("dialog", async (dialog) => {
+    this.page.once("dialog", async (dialog: { accept: () => any }) => {
       await dialog.accept();
     });
 
@@ -89,13 +89,16 @@ Then(
 );
 
 When(
-  "I attempt to add the item again but expect {string}",
+  "I attempt to add the item again but expect {string} dialog",
   async function (expectedMessage: string) {
     const cartPage = new CartPage(this.page);
-    this.page.once("dialog", async (dialog) => {
-      this.lastAlertMessage = dialog.message();
-      await dialog.accept();
-    });
+    this.page.once(
+      "dialog",
+      async (dialog: { message: () => any; accept: () => any }) => {
+        this.lastAlertMessage = dialog.message();
+        await dialog.accept();
+      },
+    );
     await cartPage.clickAddToCart();
     expect(this.lastAlertMessage).toContain(expectedMessage);
   },

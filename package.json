@@ -9,7 +9,7 @@
     "build": "next build",
     "start": "next start",
     "test": "jest",
-    "test:e2e": "cucumber-js; echo \"\\n Report: file://$(pwd)/reports/cucumber-report.html\" && open reports/cucumber-report.html",
+    "test:e2e": "cucumber-js tests/e2e/features/**/*.feature && echo \"\\nReport: file://$(pwd)/reports/cucumber-report.html\" && open ./reports/cucumber-report.html",
     "seed": "ts-node server/seed.ts"
   },
   "keywords": [],

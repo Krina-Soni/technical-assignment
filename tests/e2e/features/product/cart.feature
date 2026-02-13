@@ -36,5 +36,5 @@ Feature: Cart Management
 
   Scenario: Prevent adding items exceeding available stock via repeated additions
     When I view details for a product with "Stock: 2"
-    And I add the item to the cart 2 times successfully
+    And I add the item to the cart 2 times
     And I attempt to add the item again but expect "Insufficient stock" dialog
